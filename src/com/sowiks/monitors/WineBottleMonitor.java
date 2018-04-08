@@ -3,8 +3,6 @@ package com.sowiks.monitors;
 import com.sowiks.Main;
 import com.sowiks.feast_objects.Bottle;
 import com.sowiks.monitors.monitor_helpers.FeastQueue;
-import com.sowiks.monitors.monitor_helpers.PriorityElement;
-
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -26,42 +24,65 @@ public class WineBottleMonitor {
     }
 
     public void takeBottle(int i) throws InterruptedException {
-        boolean firstTime = true;
-        while (servantWaiting || bottle.isEmpty() || ! bottle.isFree()) {
-            if (firstTime) {
-                knightsQueue.updateTimeStamp(i);
-                firstTime = false;
+        lock.lock();
+        try {
+            boolean firstTime = true;
+            while (servantWaiting || bottle.isEmpty() || !bottle.isFree()) {
+                if (firstTime) {
+                    knightsQueue.updateTimeStamp(i);
+                    firstTime = false;
+                }
+                knightsQueue.markAsReady(i);
+                knightsQueue.getConditional(i).await();
             }
-            knightsQueue.markAsReady(i);
-            knightsQueue.getConditional(i).await();
+            knightsQueue.resetTimeStamp(i);
+            bottle.take();
+        } finally {
+            lock.unlock();
         }
-        knightsQueue.resetTimeStamp(i);
-        bottle.take();
     }
 
     public void releaseBottle() {
-        bottle.putDown();
-        if (servantWaiting) {
-            servantGate.signal();
-        } else {
+        lock.lock();
+        try {
+            bottle.putDown();
+            if (servantWaiting) {
+                servantGate.signal();
+            } else {
 
-            if (knightsQueue.isAnyWaitingKnightReady()) {
-                knightsQueue.getNextElement().getNotifier().signal();
+                if (knightsQueue.isAnyWaitingKnightReady()) {
+                    knightsQueue.getNextElement().getNotifier().signal();
+                }
             }
+        } finally {
+            lock.unlock();
         }
     }
-    public void takeToRefill() throws InterruptedException {
-        while (!bottle.isFree) {
-            servantWaiting = true;
-            servantGate.await();
+    public void occupyToRefill() throws InterruptedException {
+        lock.lock();
+        try {
+            while (!bottle.isFree()) {
+                servantWaiting = true;
+                servantGate.await();
+            }
+            bottle.take();
+        } finally {
+            lock.unlock();
         }
-        bottle.take();
+    }
+    public Bottle takeWineBottle() {
+        return bottle;
     }
 
     public void releaseAfterRefill() {
-        bottle.putDown();
-        if (knightsQueue.isAnyWaitingKnightReady()) {
-            knightsQueue.getNextElement().getNotifier().signal();
+        lock.lock();
+        try {
+            bottle.putDown();
+            if (knightsQueue.isAnyWaitingKnightReady()) {
+                knightsQueue.getNextElement().getNotifier().signal();
+            }
+        } finally {
+            lock.unlock();
         }
     }
 }

@@ -7,10 +7,7 @@ import com.sowiks.monitors.FeastResourcesMonitor;
 
 
 public class CucumberServant extends NamedLoggable implements Runnable {
-    private int i;
-    private String name;
     private FeastResourcesMonitor feastMonitor;
-    private ConsoleMonitor logger;
     public CucumberServant(FeastResourcesMonitor feastMonitor, ConsoleMonitor logger) {
         super("Cucumber servant", logger);
         this.feastMonitor = feastMonitor;
@@ -34,8 +31,8 @@ public class CucumberServant extends NamedLoggable implements Runnable {
             }
             for (CucumberPlate cp : feastMonitor.takeAllPlates()) {
                 cp.refill();
-                log("refilled plates");
             }
+            log("refilled plates");
 
             feastMonitor.ReleaseResourcesAfterRefill();
             log("Released all plates");

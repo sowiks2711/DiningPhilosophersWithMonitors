@@ -6,16 +6,19 @@ import com.sowiks.feast_objects.Chalice;
 import com.sowiks.feast_objects.CucumberPlate;
 import com.sowiks.monitors.ConsoleMonitor;
 import com.sowiks.monitors.FeastResourcesMonitor;
+import com.sowiks.monitors.WineBottleMonitor;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Knight extends NamedLoggable implements Runnable {
     private int i;
+    private WineBottleMonitor bottleMonitor;
     private FeastResourcesMonitor feastMonitor;
-    public Knight(int i, FeastResourcesMonitor feastMonitor, ConsoleMonitor logger) {
+    public Knight(int i, ConsoleMonitor logger, FeastResourcesMonitor feastMonitor, WineBottleMonitor bottleMonitor) {
         super("Knight " + i, logger);
         this.i = i;
         this.feastMonitor = feastMonitor;
+        this.bottleMonitor = bottleMonitor;
         log( "Started");
     }
 
@@ -43,7 +46,19 @@ public class Knight extends NamedLoggable implements Runnable {
             log("Took chalice");
             CucumberPlate p = feastMonitor.takePlate(i);
             log("Took plate");
+            log("Waiting for bottle");
+            try {
+                bottleMonitor.takeBottle(i);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            log("Pouring wine");
+            bottleMonitor.takeWineBottle().pour();
+            bottleMonitor.releaseBottle();
+            log("Drinking wine");
             c.drink();
+            log("Biting cucumber");
             p.takeCucumber();
 
             feastMonitor.ReleaseResources(i);
