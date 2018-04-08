@@ -1,14 +1,13 @@
 package com.sowiks.monitors;
 
-import com.sowiks.FeastObjects.Chalice;
-import com.sowiks.FeastObjects.ChalicesCyclicCollection;
-import com.sowiks.FeastObjects.CucumberPlate;
-import com.sowiks.FeastObjects.PlatesCyclicCollection;
+import com.sowiks.feast_objects.Chalice;
+import com.sowiks.feast_objects.ChalicesCyclicCollection;
+import com.sowiks.feast_objects.CucumberPlate;
+import com.sowiks.feast_objects.PlatesCyclicCollection;
 import com.sowiks.Main;
 import com.sowiks.monitors.monitor_helpers.FeastQueue;
 import com.sowiks.monitors.monitor_helpers.PriorityElement;
 
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -49,17 +48,18 @@ public class FeastResourcesMonitor {
             //    add yourself to awaiting queue
             //    await on conditional
             boolean firstTime = true;
-            while (!hasIthKAvailableResources(i)) {
+            while (!hasIthKAvailableResources(i) || anyNeighbourStarved(i)) {
                 if (firstTime) {
                     knightsQueue.updateTimeStamp(i);
-                    knightsQueue.markAsWaiting(i);
                     firstTime = false;
                 }
+                knightsQueue.markAsWaiting(i);
                 knightsQueue.getConditional(i).await();
             }
+            knightsQueue.resetTimeStamp(i);
 
             chalices.getChaliceForIthK(i).take();
-            plates.getPlateForIthK(i);
+            plates.getPlateForIthK(i).take();
             nrOfPlatesTaken++;
             //
             if (!isServantWaiting) {
@@ -72,11 +72,28 @@ public class FeastResourcesMonitor {
             lock.unlock();
         }
     }
+
+    private boolean anyNeighbourStarved(int i) {
+        boolean neighbourStarved = false;
+        Long myArrival = knightsQueue.getTimeStamp(i);
+        Long neighbourOneArrival = knightsQueue.getTimeStamp(i-1);
+        Long neighbourTwoArrival = knightsQueue.getTimeStamp(i+1);
+        if (myArrival - neighbourOneArrival > Main.STARVATION_TRESHOLD)
+            neighbourStarved = true;
+        if (myArrival - neighbourTwoArrival > Main.STARVATION_TRESHOLD)
+            neighbourStarved = true;
+
+        return neighbourStarved;
+    }
+
     public CucumberPlate takePlate(int i) {
         return plates.getPlateForIthK(i);
     }
     public Chalice takeChalice(int i) {
         return chalices.getChaliceForIthK(i);
+    }
+    public CucumberPlate[] takeAllPlates() {
+        return plates.TakeAll();
     }
 
     public void ReleaseResources(int i) {
@@ -102,9 +119,35 @@ public class FeastResourcesMonitor {
                     knightsQueue.markAsReady(i+1);
                 }
                 signalReadyKnight();
-
             }
+        } finally {
+            lock.unlock();
+        }
+    }
 
+    public void OccupyResourcesToFillPlates() throws InterruptedException {
+        lock.lock();
+        try {
+            while (nrOfPlatesTaken > 0) {
+                isServantWaiting = true;
+                servantGate.await();
+            }
+            isServantWaiting = false;
+            plates.occupyAll();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void ReleaseResourcesAfterRefill() {
+
+        lock.lock();
+        try {
+            for (CucumberPlate cp:takeAllPlates()) {
+                cp.putDown();
+            }
+            knightsQueue.moveAllWaitingToReady();
+            signalReadyKnight();
         } finally {
             lock.unlock();
         }
@@ -112,14 +155,13 @@ public class FeastResourcesMonitor {
 
     private void signalReadyKnight() {
         if (knightsQueue.isAnyWaitingKnightReady()) {
-
             PriorityElement p = knightsQueue.getNextElement();
             int index = p.getIndex();
             // move to awaiting q if i-1, i+1 is ready
-            if (knightsQueue.isIthKReady(index-1)) {
+            if (knightsQueue.isIthKReady(index - 1)) {
                 knightsQueue.markAsWaiting(index - 1);
             }
-            if (knightsQueue.isIthKReady(index+1)) {
+            if (knightsQueue.isIthKReady(index + 1)) {
                 knightsQueue.markAsWaiting(index + 1);
             }
             p.getNotifier().signal();

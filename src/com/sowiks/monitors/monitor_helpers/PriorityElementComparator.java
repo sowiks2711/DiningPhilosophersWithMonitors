@@ -5,6 +5,8 @@ import java.util.Comparator;
 public class PriorityElementComparator implements Comparator<PriorityElement> {
     @Override
     public int compare(PriorityElement o1, PriorityElement o2) {
-        return o2.getArrivalTime().compareTo(o1.getArrivalTime());
+        Long o1Time = o1.getArrivalTime();
+        Long o2Time = o2.getArrivalTime();
+        return o1Time.compareTo(o2Time);
     }
 }

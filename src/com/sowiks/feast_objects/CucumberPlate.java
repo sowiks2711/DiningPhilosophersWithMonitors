@@ -1,11 +1,16 @@
-package com.sowiks.FeastObjects;
+package com.sowiks.feast_objects;
 
 import com.sowiks.Main;
 
 public class CucumberPlate {
-    int plateCapacity = Main.PLATE_CAPACITY;
-    int cucumbersLeft = plateCapacity;
-    boolean isFree = true;
+    private int plateCapacity;
+    private int cucumbersLeft;
+    private boolean isFree;
+    public CucumberPlate() {
+        plateCapacity = Main.PLATE_CAPACITY;
+        cucumbersLeft = Main.PLATE_CAPACITY;
+        isFree = true;
+    }
     public boolean isFree() {
         return isFree;
     }
@@ -19,7 +24,7 @@ public class CucumberPlate {
         isFree = true;
     }
     public void takeCucumber() {
-        //cucumbersLeft--;
+        cucumbersLeft--;
     }
     public void refill() {
         cucumbersLeft = plateCapacity;

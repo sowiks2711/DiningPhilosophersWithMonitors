@@ -1,4 +1,4 @@
-package com.sowiks.FeastObjects;
+package com.sowiks.feast_objects;
 
 import com.sowiks.Remainder;
 

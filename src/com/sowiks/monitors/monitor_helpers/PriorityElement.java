@@ -25,7 +25,10 @@ public class PriorityElement {
         return index;
     }
 
-    public void setArrivalTime(long l) {
-        arrivalTime = l;
+    public void setArrivalTime() {
+        arrivalTime = System.nanoTime();
+    }
+    public void resetArrivalTime() {
+        arrivalTime = Long.MAX_VALUE;
     }
 }

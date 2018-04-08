@@ -1,4 +1,4 @@
-package com.sowiks.FeastObjects;
+package com.sowiks.feast_objects;
 
 import com.sowiks.Remainder;
 
@@ -16,5 +16,15 @@ public class PlatesCyclicCollection {
 
     public CucumberPlate getPlateForIthK(int i) {
         return plates[Remainder.rem(((i+1)/2),n)];
+    }
+
+    public void occupyAll() {
+        for (int i = 0; i < plates.length ; i++) {
+            plates[i].take();
+        }
+    }
+
+    public CucumberPlate[] TakeAll() {
+        return plates;
     }
 }
