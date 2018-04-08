@@ -1,5 +1,7 @@
 package com.sowiks.FeastObjects;
 
+import com.sowiks.Remainder;
+
 public class PlatesCyclicCollection {
     private CucumberPlate[] plates;
     private int n;
@@ -10,7 +12,7 @@ public class PlatesCyclicCollection {
 
     }
 
-    public CucumberPlate getPlateForKi(int i) {
-        return plates[((i+1)/2)%n];
+    public CucumberPlate getPlateForIthK(int i) {
+        return plates[Remainder.rem(((i+1)/2),n)];
     }
 }

@@ -1,5 +1,7 @@
 package com.sowiks.FeastObjects;
 
+import com.sowiks.Remainder;
+
 public class ChalicesCyclicCollection {
     private Chalice[] chalices;
     private int n;
@@ -10,7 +12,7 @@ public class ChalicesCyclicCollection {
 
     }
 
-    public Chalice getChaliceForKi(int i) {
-        return chalices[(i/2)%n];
+    public Chalice getChaliceForIthK(int i) {
+        return chalices[Remainder.rem((i/2),n)];
     }
 }
