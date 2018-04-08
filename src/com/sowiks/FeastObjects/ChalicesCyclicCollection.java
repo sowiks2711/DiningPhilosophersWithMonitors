@@ -6,10 +6,12 @@ public class ChalicesCyclicCollection {
     private Chalice[] chalices;
     private int n;
 
-    public ChalicesCyclicCollection(int n){
+    public ChalicesCyclicCollection(int n) {
         this.n = n;
         chalices = new Chalice[n];
-
+        for (int i = 0; i < n; i++) {
+            chalices[i] = new Chalice();
+        }
     }
 
     public Chalice getChaliceForIthK(int i) {

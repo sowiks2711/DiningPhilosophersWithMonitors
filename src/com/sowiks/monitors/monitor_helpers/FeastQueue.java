@@ -25,7 +25,7 @@ public class FeastQueue {
     //mark as waiting
     public void markAsWaiting(int i) {
         int k = mapIndex(i);
-        PriorityElement rpe = awaitingForResource.get(k);
+        PriorityElement rpe = feasters[k];
         if (readyQueue.containsKey(rpe)){
             readyQueue.remove(rpe);
         }
@@ -63,5 +63,14 @@ public class FeastQueue {
     public Condition getConditional(int i) {
         int k = mapIndex(i);
         return feasters[k].getNotifier();
+    }
+
+    public boolean isAnyWaitingKnightReady() {
+        return readyQueue.size() != 0;
+    }
+
+    public boolean isIthKReady(int i) {
+        int k = mapIndex(i);
+        return readyQueue.containsKey(feasters[k]);
     }
 }

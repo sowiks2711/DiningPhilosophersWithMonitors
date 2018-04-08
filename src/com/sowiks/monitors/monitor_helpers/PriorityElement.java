@@ -7,13 +7,11 @@ import java.util.concurrent.locks.Lock;
 public class PriorityElement {
     private Long arrivalTime;
     private Condition gate;
-    private boolean isWaiting;
     private int index;
 
     public PriorityElement(Lock lock, int i) {
         this.arrivalTime = Long.MAX_VALUE;
         gate = lock.newCondition();
-        isWaiting = false;
         index = i;
     }
 

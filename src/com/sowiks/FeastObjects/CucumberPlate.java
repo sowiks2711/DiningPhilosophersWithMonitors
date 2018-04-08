@@ -19,7 +19,7 @@ public class CucumberPlate {
         isFree = true;
     }
     public void takeCucumber() {
-        cucumbersLeft--;
+        //cucumbersLeft--;
     }
     public void refill() {
         cucumbersLeft = plateCapacity;

@@ -3,13 +3,13 @@ package com.sowiks.FeastObjects;
 import com.sowiks.Main;
 
 public class Chalice {
-    private boolean isFree = false;
-    private boolean isEmpty = true;
+    private boolean isFree = true;
+    private boolean isEmpty = false;
 
     public boolean isFree() {
         return isFree;
     }
-    public void take(){
+    public void take() {
         isFree = false;
     }
     public void putDown() {
@@ -29,7 +29,7 @@ public class Chalice {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        isEmpty = true;
+        //isEmpty = true;
     }
 
 }
