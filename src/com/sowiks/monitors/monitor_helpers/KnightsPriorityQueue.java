@@ -6,15 +6,15 @@ import java.util.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-public class FeastQueue {
-    private PriorityElement[] feasters;
+public class KnightsPriorityQueue {
+    private PriorityElement[] knights;
     private boolean[] awaitingForResource;//awaitingForResources set
     private TreeMap<PriorityElement, PriorityElement> readyQueue;//ready priority queue
 
-    public FeastQueue(Lock lock, int n) {
-        feasters = new PriorityElement[n];
+    public KnightsPriorityQueue(Lock lock, int n) {
+        knights = new PriorityElement[n];
         for (int i = 0; i < n ; i++) {
-            feasters[i] = new PriorityElement(lock, i);
+            knights[i] = new PriorityElement(lock, i);
         }
         awaitingForResource = new boolean[n];
         readyQueue = new TreeMap<>(new PriorityElementComparator());
@@ -22,7 +22,7 @@ public class FeastQueue {
     //mark as waiting
     public void markAsWaiting(int i) {
         int k = mapIndex(i);
-        PriorityElement rpe = feasters[k];
+        PriorityElement rpe = knights[k];
         if (readyQueue.containsKey(rpe)){
             readyQueue.remove(rpe);
         }
@@ -37,13 +37,13 @@ public class FeastQueue {
     //mark as ready
     public void markAsReady(int i) {
         int k = mapIndex(i);
-        PriorityElement rpe = feasters[k];
+        PriorityElement rpe = knights[k];
         readyQueue.put(rpe,rpe);
         awaitingForResource[k] = false;
     }
 
     private int mapIndex(int i) {
-        return Remainder.rem(i, feasters.length);
+        return Remainder.rem(i, knights.length);
     }
 
     //get condition for the next feaster
@@ -54,12 +54,12 @@ public class FeastQueue {
     }
 
     public void updateTimeStamp(int i) {
-        feasters[i].setArrivalTime();
+        knights[i].setArrivalTime();
     }
 
     public Condition getConditional(int i) {
         int k = mapIndex(i);
-        return feasters[k].getNotifier();
+        return knights[k].getNotifier();
     }
 
     public boolean isAnyWaitingKnightReady() {
@@ -68,7 +68,7 @@ public class FeastQueue {
 
     public boolean isIthKReady(int i) {
         int k = mapIndex(i);
-        return readyQueue.containsKey(feasters[k]);
+        return readyQueue.containsKey(knights[k]);
     }
 
     public void moveAllWaitingToReady() {
@@ -81,11 +81,11 @@ public class FeastQueue {
 
     public Long getTimeStamp(int i) {
         int k = mapIndex(i);
-        return feasters[k].getArrivalTime();
+        return knights[k].getArrivalTime();
     }
 
     public void resetTimeStamp(int i) {
         int k = mapIndex(i);
-        feasters[k].resetArrivalTime();
+        knights[k].resetArrivalTime();
     }
 }

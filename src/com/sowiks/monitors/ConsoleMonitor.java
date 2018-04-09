@@ -11,7 +11,8 @@ public class ConsoleMonitor {
     }
     public void log(String name, String action) {
         lock.lock();
-        System.out.println(name + "\t\t:" + action);
+        System.out.format("%-20s%s",name + ":",  action);
+        System.out.println();
         lock.unlock();
     }
 }

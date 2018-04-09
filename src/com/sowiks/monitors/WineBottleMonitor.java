@@ -2,14 +2,14 @@ package com.sowiks.monitors;
 
 import com.sowiks.Main;
 import com.sowiks.feast_objects.Bottle;
-import com.sowiks.monitors.monitor_helpers.FeastQueue;
+import com.sowiks.monitors.monitor_helpers.KnightsPriorityQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class WineBottleMonitor {
     private Lock lock;
-    private FeastQueue knightsQueue;
+    private KnightsPriorityQueue knightsQueue;
     private Condition servantGate;
     private boolean servantWaiting;
     private Bottle bottle;
@@ -17,7 +17,7 @@ public class WineBottleMonitor {
     public WineBottleMonitor() {
         int n = Main.N;
         lock = new ReentrantLock();
-        knightsQueue = new FeastQueue(lock, n);
+        knightsQueue = new KnightsPriorityQueue(lock, n);
         servantGate = lock.newCondition();
         servantWaiting = false;
         bottle = new Bottle();

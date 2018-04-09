@@ -5,7 +5,7 @@ import com.sowiks.feast_objects.ChalicesCyclicCollection;
 import com.sowiks.feast_objects.CucumberPlate;
 import com.sowiks.feast_objects.PlatesCyclicCollection;
 import com.sowiks.Main;
-import com.sowiks.monitors.monitor_helpers.FeastQueue;
+import com.sowiks.monitors.monitor_helpers.KnightsPriorityQueue;
 import com.sowiks.monitors.monitor_helpers.PriorityElement;
 
 import java.util.concurrent.locks.Condition;
@@ -19,7 +19,7 @@ public class FeastResourcesMonitor {
     //chalicesCyclicCollection
     private ChalicesCyclicCollection chalices;
     //FeastQueueKi
-    private FeastQueue knightsQueue;
+    private KnightsPriorityQueue knightsQueue;
     //nrOfTakenPlates
     private int nrOfPlatesTaken;
     //isPlatesRefillerWaiting
@@ -31,7 +31,7 @@ public class FeastResourcesMonitor {
         lock = new ReentrantLock();
         plates = new PlatesCyclicCollection(n/2);
         chalices = new ChalicesCyclicCollection(n/2);
-        knightsQueue = new FeastQueue(lock, n);
+        knightsQueue = new KnightsPriorityQueue(lock, n);
         servantGate = lock.newCondition();
         nrOfPlatesTaken = 0;
     }
