@@ -11,6 +11,7 @@ import com.sowiks.monitors.WineBottleMonitor;
 import java.util.Random;
 
 public class Main {
+
     public static final int N = 8;
     public static final int PLATE_CAPACITY = 4;
     public static final int STARVATION_TRESHOLD = 10000; //in nanoseconds
@@ -18,15 +19,16 @@ public class Main {
     public static final int MINIMAL_KNIGHT_SLEEP_TIME = 100;
     public static final int MAXIMAL_KNIGHT_SLEEP_TIME = 300;
     public static final int WINE_BOTTLE_CAPACITY = 10;
-    public static final long BOTTLE_SERVANT_SLEEP_TIME = 5000;
+    public static final int BOTTLE_SERVANT_SLEEP_TIME = 5000;
     public static final int KING_INDEX = 0;
     public static final int MINIMAL_KNIGHT_STORY_TELLING_TIME = 700;
     public static final int MAXIMAL_KNIGHT_STORY_TELLING_TIME = 1200;
-    public static long POUR_TIME = 200;
-    public static long DRINK_TIME = 200;
-    public static Random rnd = new Random();
+    public static final int POUR_TIME = 200;
+    public static final int DRINK_TIME = 200;
+
+
     public static void main(String[] args) {
-        if (N < 4 || (N%2) != 0)
+        if (N < 4 || (N % 2) != 0)
             throw  new IllegalArgumentException(
                     "N=" + N + " should be even and greater than or equal to 4"
             );
